@@ -1,0 +1,110 @@
+1. activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_content"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <EditText
+        android:id="@+id/inputName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Name" />
+
+    <Button
+        android:id="@+id/addButton"
+        android:layout_width="wrap"
+        android:layout_height="wrap_content"
+        android:text="Add" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical" />
+</LinearLayout>
+
+
+
+2. MainActivity.kt
+
+package com.example.errorlearning
+
+import androidx.appcompat.activity.AppCompatActivity
+import android.os.Bundle
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.errorlearning.databinding.ActivityMainBinding
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var adapter: CustomAdapter
+    private val itemList = mutableListOf<String>()
+    
+    overide fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.getRoot)
+        
+        adapter = CustomAdapter(itemList)
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.adapter = adapter
+        
+        binding.addButton.setOnClickListener {
+            val name = binding.inputName.text.toString()
+            if (name.isNotBlank()) {
+                itemList.add(name)
+                adapter.notifyDataSetChanged() 
+                binding.inputName.clear()
+            }
+        }
+    }
+}
+
+
+
+3. CustomAdapter.kt
+
+package com.example.errorlearning
+
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+
+class CustomAdapter(var items: List<String>): RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.inflate(parent.context, R.layout.item_layout, parent, false)
+        return ViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val item = items.get(position)
+        holder.textView.text = item
+    }
+
+    override fun getItemCount() = items.size
+
+    class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+        val textView: TextView = itemView.findViewById(R.id.textViewItem)
+    }
+}
+
+
+
+4. item_layout.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/textViewItem"
+        android:layout_width="wrap"
+        android:layout_height="match_content" />
+</LinearLayout>
